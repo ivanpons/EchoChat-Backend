@@ -1,6 +1,6 @@
-package com.llimapons.echo.database.repositories
+package com.llimapons.echo.infra.database.repositories
 
-import com.llimapons.echo.database.entities.UserEntity
+import com.llimapons.echo.infra.database.entities.UserEntity
 import com.llimapons.echo.domain.model.UserId
 import org.springframework.data.jpa.repository.JpaRepository
 

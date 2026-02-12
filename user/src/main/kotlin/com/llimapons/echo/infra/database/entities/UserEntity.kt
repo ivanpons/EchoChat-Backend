@@ -1,4 +1,4 @@
-package com.llimapons.echo.database.entities
+package com.llimapons.echo.infra.database.entities
 
 import com.llimapons.echo.domain.model.UserId
 import jakarta.persistence.Column
