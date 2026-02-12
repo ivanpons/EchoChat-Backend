@@ -1,6 +1,9 @@
 package com.llimapons.echo.api.exception
 
+import com.llimapons.echo.domain.exception.InvalidCredentialsException
+import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.UserAlreadyExistsException
+import com.llimapons.echo.domain.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -18,6 +21,26 @@ class AuthExceptionHandler {
         "message" to e.message
     )
 
+    @ExceptionHandler(UserNotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun onUserNotFound(e: UserNotFoundException) = mapOf(
+        "code" to "USER_NOT_FOUND",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(InvalidCredentialsException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onInvalidCredentials(e: InvalidCredentialsException) = mapOf(
+        "code" to "INVALID_CREDENTIALS",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(InvalidTokenException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onInvalidToken(e: InvalidTokenException) = mapOf(
+        "code" to "INVALID_TOKEN",
+        "message" to e.message
+    )
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun onValidationException(
