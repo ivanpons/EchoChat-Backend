@@ -2,6 +2,7 @@ package com.llimapons.echo.api.controllers
 
 import com.llimapons.echo.api.dto.AuthenticatedUserDto
 import com.llimapons.echo.api.dto.LoginRequest
+import com.llimapons.echo.api.dto.RefreshRequest
 import com.llimapons.echo.api.dto.RegisterRequest
 import com.llimapons.echo.api.dto.UserDto
 import com.llimapons.echo.api.mapper.toAuthenticatedUserDto
@@ -38,6 +39,24 @@ class AuthController(
             email = body.email,
             password = body.password
         ).toAuthenticatedUserDto()
+    }
+
+    @PostMapping("/refresh")
+    fun refresh(
+        @Valid @RequestBody body: RefreshRequest
+    ): AuthenticatedUserDto {
+        return authService.refresh(
+            refreshToken = body.refreshToken
+        ).toAuthenticatedUserDto()
+    }
+
+    @PostMapping("/logout")
+    fun logout(
+        @Valid @RequestBody body: RefreshRequest
+    ) {
+        authService.logout(
+            refreshToken = body.refreshToken
+        )
     }
 
 }
