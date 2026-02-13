@@ -8,16 +8,20 @@ import com.llimapons.echo.api.dto.UserDto
 import com.llimapons.echo.api.mapper.toAuthenticatedUserDto
 import com.llimapons.echo.api.mapper.toUserDto
 import com.llimapons.echo.service.auth.AuthService
+import com.llimapons.echo.service.auth.EmailVerificationService
 import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val emailVerificationService: EmailVerificationService
 ) {
 
     @PostMapping("/register")
@@ -57,6 +61,13 @@ class AuthController(
         authService.logout(
             refreshToken = body.refreshToken
         )
+    }
+
+    @GetMapping("/verify")
+    fun verifyEmail(
+        @RequestParam token: String
+    ){
+        emailVerificationService.verifyEmail(token)
     }
 
 }

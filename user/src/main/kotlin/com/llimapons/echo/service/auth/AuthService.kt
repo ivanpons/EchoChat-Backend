@@ -1,5 +1,6 @@
 package com.llimapons.echo.service.auth
 
+import com.llimapons.echo.domain.exception.EmailNotVerifyException
 import com.llimapons.echo.domain.exception.InvalidCredentialsException
 import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.UserAlreadyExistsException
@@ -25,22 +26,27 @@ class AuthService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val refreshTokenRepository: RefreshTokenRepository,
-    private val jwtService: JwtService
+    private val jwtService: JwtService,
+    private val emailVerificationService: EmailVerificationService
 ) {
+    @Transactional
     fun register(email: String, username: String, password: String): User {
+        val trimmedEmail: String = email.trim()
         val user = userRepository.findByEmailOrUsername(
-            email = email.trim(),
+            email = trimmedEmail,
             username = username.trim()
         )
         if (user != null) throw UserAlreadyExistsException()
 
-        val savedUser = userRepository.save(
+        val savedUser = userRepository.saveAndFlush(
             UserEntity(
-                email = email.trim(),
+                email = trimmedEmail,
                 username = username.trim(),
                 hashedPassword = passwordEncoder.encode(password)!!
             )
         ).toUser()
+
+        val token = emailVerificationService.createVerificationToken(trimmedEmail)
 
         return savedUser
     }
@@ -56,8 +62,9 @@ class AuthService(
             throw InvalidCredentialsException()
         }
 
-        //TODO verify email
-
+        if (!user.hasEmailVerified){
+            throw EmailNotVerifyException()
+        }
 
         return user.id?.let { userId ->
             val accessToken = jwtService.generateAccessToken(userId)

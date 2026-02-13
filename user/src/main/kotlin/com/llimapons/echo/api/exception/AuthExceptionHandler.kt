@@ -1,5 +1,6 @@
 package com.llimapons.echo.api.exception
 
+import com.llimapons.echo.domain.exception.EmailNotVerifyException
 import com.llimapons.echo.domain.exception.InvalidCredentialsException
 import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.UserAlreadyExistsException
@@ -39,6 +40,13 @@ class AuthExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun onInvalidToken(e: InvalidTokenException) = mapOf(
         "code" to "INVALID_TOKEN",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(EmailNotVerifyException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onEmailNotVerified(e: EmailNotVerifyException) = mapOf(
+        "code" to "EMAIL_NOT:VERIFIED",
         "message" to e.message
     )
 
