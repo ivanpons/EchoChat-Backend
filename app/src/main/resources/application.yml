@@ -1,6 +1,6 @@
 spring:
   application:
-    name: chirp
+    name: echo
 
   datasource:
     url: jdbc:postgresql://aws-1-eu-west-3.pooler.supabase.com:5432/postgres
@@ -38,3 +38,5 @@ echo:
   email:
     verification:
       expiry-hours: 24
+    reset-password:
+      expiry-minutes: 30
