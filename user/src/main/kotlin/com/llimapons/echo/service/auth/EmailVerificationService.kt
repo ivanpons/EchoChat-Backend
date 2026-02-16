@@ -21,6 +21,9 @@ class EmailVerificationService(
     @param:Value("\${echo.email.verification.expiry-hours}") private val expiryHours: Long
 ) {
 
+    fun resendVerificationEmail(email: String){
+
+    }
 
     @Transactional
     fun createVerificationToken(email: String): EmailVerificationToken {

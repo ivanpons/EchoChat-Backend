@@ -3,6 +3,8 @@ package com.llimapons.echo.api.exception
 import com.llimapons.echo.domain.exception.EmailNotVerifyException
 import com.llimapons.echo.domain.exception.InvalidCredentialsException
 import com.llimapons.echo.domain.exception.InvalidTokenException
+import com.llimapons.echo.domain.exception.RateLimitException
+import com.llimapons.echo.domain.exception.SamePasswordException
 import com.llimapons.echo.domain.exception.UserAlreadyExistsException
 import com.llimapons.echo.domain.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
@@ -47,6 +49,20 @@ class AuthExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun onEmailNotVerified(e: EmailNotVerifyException) = mapOf(
         "code" to "EMAIL_NOT:VERIFIED",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(SamePasswordException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun onSamePassword(e: SamePasswordException) = mapOf(
+        "code" to "SAME_PASSWORD",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(RateLimitException::class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    fun onRateLimit(e: RateLimitException) = mapOf(
+        "code" to "RATE_LIMIT_EXCEEDED",
         "message" to e.message
     )
 
