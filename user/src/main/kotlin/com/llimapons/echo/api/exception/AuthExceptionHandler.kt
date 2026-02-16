@@ -5,6 +5,7 @@ import com.llimapons.echo.domain.exception.InvalidCredentialsException
 import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.RateLimitException
 import com.llimapons.echo.domain.exception.SamePasswordException
+import com.llimapons.echo.domain.exception.UnauthorizedException
 import com.llimapons.echo.domain.exception.UserAlreadyExistsException
 import com.llimapons.echo.domain.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
@@ -49,6 +50,13 @@ class AuthExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun onEmailNotVerified(e: EmailNotVerifyException) = mapOf(
         "code" to "EMAIL_NOT:VERIFIED",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(UnauthorizedException::class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    fun onUnauthorized(e: UnauthorizedException) = mapOf(
+        "code" to "UNAUTHORIZED",
         "message" to e.message
     )
 

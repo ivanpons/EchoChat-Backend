@@ -11,6 +11,7 @@ import com.llimapons.echo.api.dto.ResetPasswordRequest
 import com.llimapons.echo.api.dto.UserDto
 import com.llimapons.echo.api.mapper.toAuthenticatedUserDto
 import com.llimapons.echo.api.mapper.toUserDto
+import com.llimapons.echo.api.util.requestUserId
 import com.llimapons.echo.infra.rate_limiting.EmailRateLimiter
 import com.llimapons.echo.service.auth.AuthService
 import com.llimapons.echo.service.auth.EmailVerificationService
@@ -135,6 +136,10 @@ class AuthController(
     fun changePassword(
         @Valid @RequestBody body: ChangePasswordRequest
     ) {
-        // TODO: Extract request user ID and call service
+        passwordResetService.changePassword(
+            userId = requestUserId,
+            oldPassword = body.oldPassword,
+            newPassword = body.newPassword
+        )
     }
 }
