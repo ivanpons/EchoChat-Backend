@@ -1,5 +1,6 @@
 package com.llimapons.echo.service.auth
 
+import com.llimapons.echo.domain.events.user.UserEvent
 import com.llimapons.echo.domain.exception.EmailNotVerifyException
 import com.llimapons.echo.domain.exception.InvalidCredentialsException
 import com.llimapons.echo.domain.exception.InvalidTokenException
@@ -7,12 +8,13 @@ import com.llimapons.echo.domain.exception.UserAlreadyExistsException
 import com.llimapons.echo.domain.exception.UserNotFoundException
 import com.llimapons.echo.domain.model.AuthenticatedUser
 import com.llimapons.echo.domain.model.User
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 import com.llimapons.echo.infra.database.entities.RefreshTokenEntity
 import com.llimapons.echo.infra.database.entities.UserEntity
 import com.llimapons.echo.infra.database.mappers.toUser
 import com.llimapons.echo.infra.database.repositories.RefreshTokenRepository
 import com.llimapons.echo.infra.database.repositories.UserRepository
+import com.llimapons.echo.infra.message_queue.EventPublisher
 import com.llimapons.echo.infra.security.PasswordEncoder
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -27,7 +29,8 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val jwtService: JwtService,
-    private val emailVerificationService: EmailVerificationService
+    private val emailVerificationService: EmailVerificationService,
+    private val eventPublisher: EventPublisher
 ) {
     @Transactional
     fun register(email: String, username: String, password: String): User {
@@ -47,6 +50,15 @@ class AuthService(
         ).toUser()
 
         val token = emailVerificationService.createVerificationToken(trimmedEmail)
+
+        eventPublisher.publish(
+            event = UserEvent.Created(
+                userId = savedUser.id,
+                email = savedUser.email,
+                username = savedUser.username,
+                verificationToken = token.token,
+            )
+        )
 
         return savedUser
     }

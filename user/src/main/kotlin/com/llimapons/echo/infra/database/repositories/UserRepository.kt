@@ -1,7 +1,7 @@
 package com.llimapons.echo.infra.database.repositories
 
 import com.llimapons.echo.infra.database.entities.UserEntity
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserRepository: JpaRepository<UserEntity, UserId> {

@@ -1,6 +1,6 @@
 package com.llimapons.echo.api.dto
 
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 
 data class UserDto(
     val id: UserId,

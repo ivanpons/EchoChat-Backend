@@ -39,12 +39,43 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         show_sql: true
+  mail:
+    port: 587
+    password: ${MAILGUN_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  rabbitmq:
+    host: collie.lmq.cloudamqp.com
+    password: ${RABBITMQ_PASSWORD}
+    username: swtlassq
+    ssl:
+      enabled: true
+    virtual-host: swtlassq
+    listener:
+      simple:
+        acknowledge-mode: auto
+        concurrency: 1
+        max-concurrency: 3
+        prefetch: 10
+        default-requeue-rejected: true
+        retry:
+          enable: true
+          initial-interval: 1000ms
+          max-interval: 10000ms
+          max-attempts: 3
+          multiplier: 2
 
 jwt:
   secret: ${JWT_SECRET_BASE64}
 
 echo:
   email:
+    from: llimapons@hotmail.com
     verification:
       expiry-hours: 24
     reset-password:

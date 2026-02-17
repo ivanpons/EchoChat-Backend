@@ -1,6 +1,6 @@
 package com.llimapons.echo.infra.database.entities
 
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

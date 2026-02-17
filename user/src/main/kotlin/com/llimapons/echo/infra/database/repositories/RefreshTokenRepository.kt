@@ -1,6 +1,6 @@
 package com.llimapons.echo.infra.database.repositories
 
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 import com.llimapons.echo.infra.database.entities.RefreshTokenEntity
 import org.springframework.data.jpa.repository.JpaRepository
 

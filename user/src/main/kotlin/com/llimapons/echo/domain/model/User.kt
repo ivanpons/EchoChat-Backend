@@ -1,8 +1,6 @@
 package com.llimapons.echo.domain.model
 
-import java.util.UUID
-
-typealias UserId = UUID
+import com.llimapons.echo.domain.type.UserId
 
 data class User(
     val id: UserId,

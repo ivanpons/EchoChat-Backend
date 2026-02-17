@@ -6,7 +6,7 @@ import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.SamePasswordException
 import com.llimapons.echo.domain.exception.UserNotFoundException
 import com.llimapons.echo.domain.model.EmailVerificationToken
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 import com.llimapons.echo.infra.database.entities.EmailVerificationTokenEntity
 import com.llimapons.echo.infra.database.entities.PasswordResetTokenEntity
 import com.llimapons.echo.infra.database.repositories.PasswordResetTokenRepository

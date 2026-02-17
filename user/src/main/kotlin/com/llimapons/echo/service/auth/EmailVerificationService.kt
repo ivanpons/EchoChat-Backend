@@ -1,12 +1,14 @@
 package com.llimapons.echo.service.auth
 
 import com.llimapons.echo.api.mapper.toEmailVerificationToken
+import com.llimapons.echo.domain.events.user.UserEvent
 import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.UserNotFoundException
 import com.llimapons.echo.domain.model.EmailVerificationToken
 import com.llimapons.echo.infra.database.entities.EmailVerificationTokenEntity
 import com.llimapons.echo.infra.database.repositories.EmailVerificationTokenRepository
 import com.llimapons.echo.infra.database.repositories.UserRepository
+import com.llimapons.echo.infra.message_queue.EventPublisher
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -18,11 +20,27 @@ import java.time.temporal.ChronoUnit
 class EmailVerificationService(
     private val emailVerificationTokenRepository: EmailVerificationTokenRepository,
     private val userRepository: UserRepository,
-    @param:Value("\${echo.email.verification.expiry-hours}") private val expiryHours: Long
+    private val eventPublisher: EventPublisher,
+    @param:Value("\${echo.email.verification.expiry-hours}")
+    private val expiryHours: Long
 ) {
 
+    @Transactional
     fun resendVerificationEmail(email: String){
+        val token = createVerificationToken(email.trim())
 
+        if (token.user.hasEmailVerified){
+            return
+        }
+
+        eventPublisher.publish(
+            event = UserEvent.RequestResendVerification(
+                userId = token.user.id,
+                email = token.user.email,
+                username = token.user.username,
+                verificationToken = token.token
+            )
+        )
     }
 
     @Transactional

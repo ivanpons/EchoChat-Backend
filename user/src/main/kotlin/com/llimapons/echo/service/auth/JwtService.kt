@@ -1,7 +1,7 @@
 package com.llimapons.echo.service.auth
 
 import com.llimapons.echo.domain.exception.InvalidTokenException
-import com.llimapons.echo.domain.model.UserId
+import com.llimapons.echo.domain.type.UserId
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
