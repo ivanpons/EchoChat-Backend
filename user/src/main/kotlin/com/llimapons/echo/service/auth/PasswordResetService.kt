@@ -1,6 +1,7 @@
 package com.llimapons.echo.service.auth
 
 import com.llimapons.echo.api.mapper.toEmailVerificationToken
+import com.llimapons.echo.domain.events.user.UserEvent
 import com.llimapons.echo.domain.exception.InvalidCredentialsException
 import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.exception.SamePasswordException
@@ -12,6 +13,7 @@ import com.llimapons.echo.infra.database.entities.PasswordResetTokenEntity
 import com.llimapons.echo.infra.database.repositories.PasswordResetTokenRepository
 import com.llimapons.echo.infra.database.repositories.RefreshTokenRepository
 import com.llimapons.echo.infra.database.repositories.UserRepository
+import com.llimapons.echo.infra.message_queue.EventPublisher
 import com.llimapons.echo.infra.security.PasswordEncoder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.repository.findByIdOrNull
@@ -27,6 +29,7 @@ class PasswordResetService(
     private val userRepository: UserRepository,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val eventPublisher: EventPublisher,
     @param:Value("\${echo.email.reset-password.expiry-minutes}")
     private val expiryMinutes: Long
 ) {
@@ -44,7 +47,15 @@ class PasswordResetService(
 
         passwordResetTokenRepository.save(token)
 
-        //TODO: Inform notification service about password reset trigger to send email
+        eventPublisher.publish(
+            event= UserEvent.RequestResetPassword(
+                userId = userEntity.id!!,
+                username = userEntity.username,
+                email = userEntity.email,
+                passwordResetToken = token.token,
+                expiresInMinute = expiryMinutes
+            )
+        )
     }
 
     @Transactional
