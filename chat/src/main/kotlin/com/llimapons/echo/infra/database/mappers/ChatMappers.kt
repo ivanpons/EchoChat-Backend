@@ -4,6 +4,7 @@ import com.llimapons.echo.domain.model.Chat
 import com.llimapons.echo.domain.model.ChatMessage
 import com.llimapons.echo.domain.model.ChatParticipant
 import com.llimapons.echo.infra.database.entities.ChatEntity
+import com.llimapons.echo.infra.database.entities.ChatMessageEntity
 import com.llimapons.echo.infra.database.entities.ChatParticipantEntity
 
 
@@ -36,5 +37,15 @@ fun ChatParticipant.toChatParticipantEntity(): ChatParticipantEntity {
         username = username,
         email = email,
         profilePictureUrl = profilePictureUrl
+    )
+}
+
+fun ChatMessageEntity.toChatMessage(): ChatMessage {
+    return ChatMessage(
+        id = id!!,
+        chatId = chatId,
+        sender = sender.toChatParticipant(),
+        content = content,
+        createdAt = createdAt
     )
 }
