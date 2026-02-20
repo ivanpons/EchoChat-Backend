@@ -11,7 +11,7 @@ import com.llimapons.echo.api.dto.ResetPasswordRequest
 import com.llimapons.echo.api.dto.UserDto
 import com.llimapons.echo.api.mapper.toAuthenticatedUserDto
 import com.llimapons.echo.api.mapper.toUserDto
-import com.llimapons.echo.api.util.requestUserId
+import com.llimapons.echo.api.utils.requestUserId
 import com.llimapons.echo.infra.rate_limiting.EmailRateLimiter
 import com.llimapons.echo.service.auth.AuthService
 import com.llimapons.echo.service.auth.EmailVerificationService

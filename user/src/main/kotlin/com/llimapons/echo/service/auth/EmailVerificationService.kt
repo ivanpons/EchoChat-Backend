@@ -82,6 +82,14 @@ class EmailVerificationService(
                  this.hasEmailVerified = true
              }
          )
+
+        eventPublisher.publish(
+            event = UserEvent.Verified(
+                userId = verificationToken.user.id!!,
+                email = verificationToken.user.email,
+                username = verificationToken.user.username,
+            )
+        )
     }
 
 

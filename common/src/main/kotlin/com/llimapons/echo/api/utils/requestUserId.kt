@@ -1,4 +1,4 @@
-package com.llimapons.echo.api.util
+package com.llimapons.echo.api.utils
 
 import com.llimapons.echo.domain.exception.UnauthorizedException
 import com.llimapons.echo.domain.type.UserId
