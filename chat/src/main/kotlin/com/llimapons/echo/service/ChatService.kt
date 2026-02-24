@@ -1,6 +1,10 @@
 package com.llimapons.echo.service
 
 
+import com.llimapons.echo.api.dto.ChatMessageDto
+import com.llimapons.echo.api.mappers.toChatMessageDto
+import com.llimapons.echo.domain.event.ChatParticipantLeftEvent
+import com.llimapons.echo.domain.event.ChatParticipantsJoinedEvent
 import com.llimapons.echo.domain.exception.ChatNotFoundException
 import com.llimapons.echo.domain.exception.ChatParticipantNotFoundException
 import com.llimapons.echo.domain.exception.ForbiddenException
@@ -15,16 +19,36 @@ import com.llimapons.echo.infra.database.mappers.toChatMessage
 import com.llimapons.echo.infra.database.repositories.ChatMessageRepository
 import com.llimapons.echo.infra.database.repositories.ChatParticipantRepository
 import com.llimapons.echo.infra.database.repositories.ChatRepository
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 
 @Service
 class ChatService(
     private val chatRepository: ChatRepository,
     private val chatParticipantRepository: ChatParticipantRepository,
     private val chatMessageRepository: ChatMessageRepository,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
+
+    fun getChatMessages(
+        chatId: ChatId,
+        before: Instant?,
+        pageSize: Int
+    ): List<ChatMessageDto> {
+        return chatMessageRepository
+            .findByChatIdBefore(
+                chatId = chatId,
+                before = before ?: Instant.now(),
+                pageable = PageRequest.of(0, pageSize)
+            )
+            .content
+            .asReversed()
+            .map { it.toChatMessage().toChatMessageDto() }
+    }
 
     @Transactional
     fun createChat(
@@ -79,6 +103,13 @@ class ChatService(
             }
         ).toChat(lastMessage)
 
+        applicationEventPublisher.publishEvent(
+            ChatParticipantsJoinedEvent(
+                chatId = chatId,
+                userIds = userIds
+            )
+        )
+
         return updatedChat
     }
 
@@ -102,6 +133,13 @@ class ChatService(
             chat.apply {
                 this.participants = chat.participants - participant
             }
+        )
+
+        applicationEventPublisher.publishEvent(
+            ChatParticipantLeftEvent(
+                chatId = chatId,
+                userId = userId
+            )
         )
     }
 
