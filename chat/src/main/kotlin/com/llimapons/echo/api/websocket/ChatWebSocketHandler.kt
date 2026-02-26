@@ -5,6 +5,7 @@ import com.llimapons.echo.api.mappers.toChatMessageDto
 import com.llimapons.echo.domain.event.ChatParticipantLeftEvent
 import com.llimapons.echo.domain.event.ChatParticipantsJoinedEvent
 import com.llimapons.echo.domain.event.MessageDeletedEvent
+import com.llimapons.echo.domain.event.ProfilePictureUpdatedEvent
 import com.llimapons.echo.domain.type.ChatId
 import com.llimapons.echo.domain.type.UserId
 import com.llimapons.echo.service.ChatMessageService
@@ -282,6 +283,46 @@ class ChatWebSocketHandler(
                         logger.error("Couldn't close sessions for session ${session.id}")
                     }
                 }
+            }
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    fun onProfilePictureUpdated(event: ProfilePictureUpdatedEvent) {
+        val userChats = connectionLock.read {
+            userChatIds[event.userId]?.toList() ?: emptyList()
+        }
+
+        val dto = ProfilePictureUpdateDto(
+            userId = event.userId,
+            newUrl = event.newUrl,
+        )
+
+        val sessionIds = mutableSetOf<String>()
+        userChats.forEach { chatId ->
+            connectionLock.read {
+                chatToSessions[chatId]?.let { sessions ->
+                    sessionIds.addAll(sessions)
+                }
+            }
+        }
+
+        val webSocketMessage = OutgoingWebSocketMessage(
+            type = OutgoingWebSocketMessageType.PROFILE_PICTURE_UPDATED,
+            payload = objectMapper.writeValueAsString(dto)
+        )
+        val messageJson = objectMapper.writeValueAsString(webSocketMessage)
+
+        sessionIds.forEach { sessionId ->
+            val userSession = connectionLock.read {
+                sessions[sessionId]
+            } ?: return@forEach
+            try {
+                if(userSession.session.isOpen) {
+                    userSession.session.sendMessage(TextMessage(messageJson))
+                }
+            } catch(e: Exception) {
+                logger.error("Could not send profile picture update to session $sessionId", e)
             }
         }
     }
