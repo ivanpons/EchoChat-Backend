@@ -9,7 +9,9 @@ import com.llimapons.echo.api.utils.requestUserId
 import com.llimapons.echo.domain.type.ChatId
 import com.llimapons.echo.service.ChatService
 import jakarta.validation.Valid
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 @RestController
@@ -35,6 +37,22 @@ class ChatController(
         )
     }
 
+    @GetMapping("/{chatId}")
+    fun getChat(
+        @PathVariable("chatId") chatId: ChatId,
+    ): ChatDto {
+        return chatService.getChatById(
+            chatId = chatId,
+            requestUserId = requestUserId
+        )?.toChatDto() ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @GetMapping
+    fun getChatsForUser(): List<ChatDto> {
+        return chatService.findChatsByUser(
+            userId = requestUserId,
+        ).map { it.toChatDto() }
+    }
 
     @PostMapping
     fun createChat(

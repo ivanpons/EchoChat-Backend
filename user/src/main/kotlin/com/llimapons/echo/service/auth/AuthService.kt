@@ -16,6 +16,7 @@ import com.llimapons.echo.infra.database.repositories.RefreshTokenRepository
 import com.llimapons.echo.infra.database.repositories.UserRepository
 import com.llimapons.echo.infra.message_queue.EventPublisher
 import com.llimapons.echo.infra.security.PasswordEncoder
+import com.llimapons.echo.service.JwtService
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

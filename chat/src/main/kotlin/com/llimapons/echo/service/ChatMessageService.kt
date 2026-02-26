@@ -18,6 +18,7 @@ import com.llimapons.echo.infra.database.repositories.ChatMessageRepository
 import com.llimapons.echo.infra.database.repositories.ChatParticipantRepository
 import com.llimapons.echo.infra.database.repositories.ChatRepository
 import com.llimapons.echo.infra.message_queue.EventPublisher
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.repository.findByIdOrNull
@@ -35,6 +36,10 @@ class ChatMessageService(
 ) {
 
     @Transactional
+    @CacheEvict(
+        value = ["messages"],
+        key = "#chatId",
+    )
     fun sendMessage(
         chatId: ChatId,
         senderId: UserId,
@@ -81,6 +86,8 @@ class ChatMessageService(
             throw ForbiddenException()
         }
 
+        chatMessageRepository.delete(message)
+
         applicationEventPublisher.publishEvent(
             MessageDeletedEvent(
                 chatId = message.chatId,
@@ -88,6 +95,14 @@ class ChatMessageService(
             )
         )
 
-        chatMessageRepository.delete(message)
+        evictMessagesCache(message.chatId)
+    }
+
+    @CacheEvict(
+        value = ["messages"],
+        key = "#chatId",
+    )
+    fun evictMessagesCache(chatId: ChatId) {
+        // NO-OP: Let Spring handle the cache evict
     }
 }

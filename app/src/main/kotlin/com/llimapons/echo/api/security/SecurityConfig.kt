@@ -1,4 +1,4 @@
-package com.llimapons.echo.security
+package com.llimapons.echo.api.security
 
 import com.llimapons.echo.api.config.JwtAuthFilter
 import jakarta.servlet.DispatcherType

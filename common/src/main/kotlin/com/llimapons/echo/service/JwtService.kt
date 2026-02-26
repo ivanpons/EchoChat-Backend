@@ -1,4 +1,4 @@
-package com.llimapons.echo.service.auth
+package com.llimapons.echo.service
 
 import com.llimapons.echo.domain.exception.InvalidTokenException
 import com.llimapons.echo.domain.type.UserId
@@ -7,8 +7,7 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import kotlin.io.encoding.Base64
 
 @Service
@@ -18,7 +17,7 @@ class JwtService(
 ) {
 
     private val secretKey = Keys.hmacShaKeyFor(
-        Base64.decode(secretBase64)
+        Base64.Default.decode(secretBase64)
     )
     private val accessTokenValidityMs = expirationMinutes * 60 * 1000L
     val refreshTokenValidityMs = 30 * 24 * 60 * 60 * 1000L

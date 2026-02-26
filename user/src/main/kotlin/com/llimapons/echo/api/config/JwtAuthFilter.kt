@@ -1,6 +1,6 @@
 package com.llimapons.echo.api.config
 
-import com.llimapons.echo.service.auth.JwtService
+import com.llimapons.echo.service.JwtService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
